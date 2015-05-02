@@ -1,12 +1,9 @@
-require "pairing_with_nick/version"
-
+require 'mechanize'
+require 'pry'
+# require "pairing_with_nick/version"
+require 'sinatra'
 module PairingWithNick
-
-  require 'mechanize'
-  require 'pry'
-
   class Reddit
-
     def reddit
       browser = Mechanize.new
       a = browser.get('http://www.reddit.com/').links
@@ -34,7 +31,26 @@ module PairingWithNick
         puts link[0]
       end
     end
-
   end
 
+end
+
+def create_reddit_frontpage
+  reddit = PairingWithNick::Reddit.new.reddit
+  tags = []
+  reddit.each do |vals|
+    title = vals[0]
+    href = vals[1]
+    tags << "<a href='#{href}'>#{title}</a><br>"
+  end
+  output = ""
+  tags.each_with_index do |thang, index|
+    output += (index + 1).to_s + ". " + thang 
+  end
+  output
+end
+
+
+get '/reddit' do
+  create_reddit_frontpage
 end
